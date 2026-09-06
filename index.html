@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width,
+        initial-scale=1.0,
+        maximum-scale=1.0,
+        user-scalable=no">
+
+  <meta name="theme-color" content="#070a0f">
+
+  <title>Fire Tablet Weather Clock</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- LEFT SIDE -->
+
+  <aside class="left-side">
+
+    <!-- ALARM 1 -->
+
+    <section class="card alarm-card">
+
+      <div class="title">ALARM 1</div>
+
+      <div class="alarm-row">
+
+        <input
+          id="alarm1Time"
+          type="time"
+          value="07:00">
+
+        <label class="switch">
+          <input
+            id="alarm1Enabled"
+            type="checkbox"
+            checked>
+          <span class="slider"></span>
+        </label>
+
+      </div>
+
+      <div
+        id="alarm1Status"
+        class="alarm-status">
+        Enabled
+      </div>
+
+    </section>
+
+
+    <!-- ALARM 2 -->
+
+    <section class="card alarm-card">
+
+      <div class="title">ALARM 2</div>
+
+      <div class="alarm-row">
+
+        <input
+          id="alarm2Time"
+          type="time"
+          value="09:00">
+
+        <label class="switch">
+          <input
+            id="alarm2Enabled"
+            type="checkbox">
+          <span class="slider"></span>
+        </label>
+
+      </div>
+
+      <div
+        id="alarm2Status"
+        class="alarm-status">
+        Disabled
+      </div>
+
+    </section>
+
+
+    <!-- SETTINGS -->
+
+    <section class="card">
+
+      <div class="title">SETTINGS</div>
+
+      <div class="setting">
+        <span>24 Hour Clock</span>
+
+        <label class="switch">
+          <input
+            id="clock24"
+            type="checkbox">
+
+          <span class="slider"></span>
+        </label>
+      </div>
+
+
+      <div class="setting brightness-setting">
+
+        <span>Time-Based Brightness</span>
+
+        <span id="brightnessValue">
+          100%
+        </span>
+
+      </div>
+
+    </section>
+
+  </aside>
+
+
+  <!-- RIGHT SIDE -->
+
+  <main class="right-side">
+
+    <!-- CLOCK -->
+
+    <section class="clock">
+
+      <div id="time">
+        12:00:00 PM
+      </div>
+
+      <div id="date">
+        Loading...
+      </div>
+
+    </section>
+
+
+    <!-- WEATHER -->
+
+    <section class="weather-card">
+
+      <div class="title">
+        WEATHER
+      </div>
+
+      <div class="weather-header">
+
+        <div>
+
+          <div
+            class="location"
+            id="location">
+            Loading location...
+          </div>
+
+          <div
+            class="temperature"
+            id="temperature">
+            --°
+          </div>
+
+          <div
+            class="feels"
+            id="feels">
+            Feels like --°
+          </div>
+
+          <div
+            class="condition"
+            id="condition">
+            Loading weather...
+          </div>
+
+        </div>
+
+        <div
+          class="weather-icon"
+          id="weatherIcon">
+          🌤️
+        </div>
+
+      </div>
+
+
+      <div class="weather-details">
+
+        <div>
+          Humidity:
+          <span id="humidity">--</span>%
+        </div>
+
+        <div>
+          Wind:
+          <span id="wind">--</span> mph
+        </div>
+
+        <div>
+          UV:
+          <span id="uv">--</span>
+        </div>
+
+        <div>
+          Rain:
+          <span id="rain">--</span>%
+        </div>
+
+        <div>
+          Sunrise:
+          <span id="sunrise">--</span>
+        </div>
+
+        <div>
+          Sunset:
+          <span id="sunset">--</span>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ALERTS -->
+
+    <section
+      class="alert-card"
+      id="alertCard">
+
+      <div class="alert-header">
+        WEATHER ALERT
+      </div>
+
+      <div id="alerts"></div>
+
+    </section>
+
+
+    <!-- FORECAST -->
+
+    <section class="forecast-card">
+
+      <div class="title">
+        7-DAY FORECAST
+      </div>
+
+      <div
+        id="forecast"
+        class="forecast">
+
+        <div class="loading">
+          Loading forecast...
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- CALENDAR -->
+
+    <section class="calendar-card">
+
+      <div class="calendar-header">
+
+        <div class="title">
+          GOOGLE CALENDAR
+        </div>
+
+        <button
+          id="calendarButton"
+          class="calendar-button">
+          Connect Calendar
+        </button>
+
+      </div>
+
+      <div
+        id="calendarStatus"
+        class="calendar-status">
+        Calendar not connected
+      </div>
+
+      <div
+        id="calendarEvents"
+        class="calendar-events">
+
+        <div class="loading">
+          Connect Google Calendar to see events.
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<!-- ALARM OVERLAY -->
+
+<div
+  id="alarmOverlay"
+  class="alarm-overlay">
+
+  <div class="alarm-popup">
+
+    <div class="alarm-big">
+      ALARM
+    </div>
+
+    <div
+      id="ringingTime"
+      class="ringing-time">
+      Wake up!
+    </div>
+
+    <button id="stopAlarm">
+      Stop Alarm
+    </button>
+
+  </div>
+
+</div>
+
+
+<script type="module" src="js/app.js"></script>
+
+</body>
+</html>
