@@ -1,133 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
 
-  <meta name="viewport"
-        content="width=device-width,
-        initial-scale=1.0,
-        maximum-scale=1.0,
-        user-scalable=no">
+  <meta
+    name="viewport"
+    content="width=device-width,
+             initial-scale=1.0,
+             maximum-scale=1.0,
+             user-scalable=no">
 
-  <meta name="theme-color" content="#070a0f">
+  <meta
+    name="theme-color"
+    content="#070a0f">
 
   <title>Fire Tablet Weather Clock</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link
+    rel="stylesheet"
+    href="style.css">
+
 </head>
+
 
 <body>
 
+
 <div class="app">
 
-  <!-- LEFT SIDE -->
 
-  <aside class="left-side">
+  <!-- ==========================================
+       LEFT SIDE
+  =========================================== -->
 
-    <!-- ALARM 1 -->
+  <div class="left-side">
 
-    <section class="card alarm-card">
 
-      <div class="title">ALARM 1</div>
+    <!-- ========================================
+         ALARM 1
+    ========================================= -->
 
-      <div class="alarm-row">
+    <div class="card">
 
-        <input
-          id="alarm1Time"
-          type="time"
-          value="07:00">
-
-        <label class="switch">
-          <input
-            id="alarm1Enabled"
-            type="checkbox"
-            checked>
-          <span class="slider"></span>
-        </label>
-
+      <div class="title">
+        ALARM 1
       </div>
 
       <div
-        id="alarm1Status"
-        class="alarm-status">
-        Enabled
+        class="alarm-time"
+        id="alarm1Display">
+        7:00 AM
       </div>
 
-    </section>
+      <input
+        type="time"
+        id="alarm1Time"
+        value="07:00">
+
+      <button
+        id="alarm1Button"
+        onclick="toggleAlarm(1)">
+
+        Turn Off
+
+      </button>
+
+    </div>
 
 
-    <!-- ALARM 2 -->
+    <!-- ========================================
+         ALARM 2
+    ========================================= -->
 
-    <section class="card alarm-card">
+    <div class="card">
 
-      <div class="title">ALARM 2</div>
-
-      <div class="alarm-row">
-
-        <input
-          id="alarm2Time"
-          type="time"
-          value="09:00">
-
-        <label class="switch">
-          <input
-            id="alarm2Enabled"
-            type="checkbox">
-          <span class="slider"></span>
-        </label>
-
+      <div class="title">
+        ALARM 2
       </div>
 
       <div
-        id="alarm2Status"
-        class="alarm-status">
-        Disabled
+        class="alarm-time"
+        id="alarm2Display">
+        8:00 AM
       </div>
 
-    </section>
+      <input
+        type="time"
+        id="alarm2Time"
+        value="08:00">
+
+      <button
+        id="alarm2Button"
+        onclick="toggleAlarm(2)">
+
+        Turn On
+
+      </button>
+
+    </div>
 
 
-    <!-- SETTINGS -->
+    <!-- ========================================
+         SETTINGS
+    ========================================= -->
 
-    <section class="card">
+    <div class="card">
 
-      <div class="title">SETTINGS</div>
+      <div class="title">
+        SETTINGS
+      </div>
+
+
+      <!-- 24 HOUR CLOCK -->
 
       <div class="setting">
-        <span>24 Hour Clock</span>
 
-        <label class="switch">
-          <input
-            id="clock24"
-            type="checkbox">
-
-          <span class="slider"></span>
-        </label>
-      </div>
-
-
-      <div class="setting brightness-setting">
-
-        <span>Time-Based Brightness</span>
-
-        <span id="brightnessValue">
-          100%
+        <span>
+          24 Hour Clock
         </span>
 
+        <button
+          id="clockFormatButton"
+          onclick="toggle24Hour()">
+
+          OFF
+
+        </button>
+
       </div>
 
-    </section>
 
-  </aside>
+      <!-- TIME BASED BRIGHTNESS -->
+
+      <div class="setting">
+
+        <span>
+          Time Based Brightness
+        </span>
+
+        <button
+          id="brightnessButton"
+          onclick="toggleBrightness()">
+
+          ON
+
+        </button>
+
+      </div>
 
 
-  <!-- RIGHT SIDE -->
+      <!-- MANUAL BRIGHTNESS -->
 
-  <main class="right-side">
+      <div class="brightness-control">
 
-    <!-- CLOCK -->
+        <label for="brightnessSlider">
+          Brightness
+        </label>
 
-    <section class="clock">
+        <input
+          id="brightnessSlider"
+          type="range"
+          min="20"
+          max="100"
+          value="100">
+
+      </div>
+
+    </div>
+
+
+  </div>
+
+
+  <!-- ==========================================
+       RIGHT SIDE
+  =========================================== -->
+
+  <div class="right-side">
+
+
+    <!-- ========================================
+         CLOCK
+    ========================================= -->
+
+    <div class="clock">
 
       <div id="time">
         12:00:00 PM
@@ -137,119 +195,176 @@
         Loading...
       </div>
 
-    </section>
+    </div>
 
 
-    <!-- WEATHER -->
+    <!-- ========================================
+         WEATHER
+    ========================================= -->
 
-    <section class="weather-card">
+    <div class="weather-card">
 
       <div class="title">
         WEATHER
       </div>
 
+
       <div class="weather-header">
 
+
         <div>
+
 
           <div
             class="location"
             id="location">
+
             Loading location...
+
           </div>
+
 
           <div
             class="temperature"
             id="temperature">
+
             --°
+
           </div>
+
 
           <div
             class="feels"
             id="feels">
+
             Feels like --°
+
           </div>
+
 
           <div
             class="condition"
             id="condition">
+
             Loading weather...
+
           </div>
 
+
         </div>
+
 
         <div
           class="weather-icon"
           id="weatherIcon">
+
           🌤️
+
         </div>
+
 
       </div>
 
 
       <div class="weather-details">
 
+
         <div>
           Humidity:
-          <span id="humidity">--</span>%
+          <span id="humidity">
+            --
+          </span>%
         </div>
+
 
         <div>
           Wind:
-          <span id="wind">--</span> mph
+          <span id="wind">
+            --
+          </span>
+          mph
         </div>
+
 
         <div>
           UV:
-          <span id="uv">--</span>
+          <span id="uv">
+            --
+          </span>
         </div>
+
 
         <div>
           Rain:
-          <span id="rain">--</span>%
+          <span id="rain">
+            --
+          </span>%
         </div>
+
 
         <div>
           Sunrise:
-          <span id="sunrise">--</span>
+          <span id="sunrise">
+            --
+          </span>
         </div>
+
 
         <div>
           Sunset:
-          <span id="sunset">--</span>
+          <span id="sunset">
+            --
+          </span>
         </div>
+
 
       </div>
 
-    </section>
+
+    </div>
 
 
-    <!-- ALERTS -->
+    <!-- ========================================
+         WEATHER ALERTS
+    ========================================= -->
 
-    <section
+    <div
       class="alert-card"
       id="alertCard">
 
+
       <div class="alert-header">
+
         WEATHER ALERT
+
       </div>
 
-      <div id="alerts"></div>
 
-    </section>
+      <div id="alerts">
+
+        Loading alerts...
+
+      </div>
 
 
-    <!-- FORECAST -->
+    </div>
 
-    <section class="forecast-card">
+
+    <!-- ========================================
+         7 DAY FORECAST
+    ========================================= -->
+
+    <div class="forecast-card">
+
 
       <div class="title">
         7-DAY FORECAST
       </div>
 
+
       <div
-        id="forecast"
-        class="forecast">
+        class="forecast"
+        id="forecast">
 
         <div class="loading">
           Loading forecast...
@@ -257,78 +372,85 @@
 
       </div>
 
-    </section>
+
+    </div>
 
 
-    <!-- CALENDAR -->
+    <!-- ========================================
+         iCAL CALENDAR
+    ========================================= -->
 
-    <section class="calendar-card">
+    <div class="calendar-card">
 
-      <div class="calendar-header">
 
-        <div class="title">
-          GOOGLE CALENDAR
-        </div>
+      <div class="title">
+        CALENDAR
+      </div>
+
+
+      <div class="calendar-settings">
+
+
+        <input
+          id="calendarURL"
+          type="url"
+          placeholder="Paste iCal / ICS calendar link"
+          autocomplete="off">
+
 
         <button
-          id="calendarButton"
-          class="calendar-button">
-          Connect Calendar
+          id="saveCalendar">
+
+          Save Calendar
+
         </button>
 
+
       </div>
 
-      <div
-        id="calendarStatus"
-        class="calendar-status">
-        Calendar not connected
-      </div>
 
       <div
         id="calendarEvents"
         class="calendar-events">
 
-        <div class="loading">
-          Connect Google Calendar to see events.
+
+        <div class="calendar-message">
+
+          Add an iCal URL to display
+          your events.
+
         </div>
+
 
       </div>
 
-    </section>
 
-  </main>
-
-</div>
-
-
-<!-- ALARM OVERLAY -->
-
-<div
-  id="alarmOverlay"
-  class="alarm-overlay">
-
-  <div class="alarm-popup">
-
-    <div class="alarm-big">
-      ALARM
     </div>
 
-    <div
-      id="ringingTime"
-      class="ringing-time">
-      Wake up!
-    </div>
-
-    <button id="stopAlarm">
-      Stop Alarm
-    </button>
 
   </div>
 
+
 </div>
 
 
-<script type="module" src="js/app.js"></script>
+<!-- ==========================================
+     SCRIPTS
+=========================================== -->
+
+<script src="js/clock.js"></script>
+
+<script src="js/alarms.js"></script>
+
+<script src="js/weather.js"></script>
+
+<script src="js/brightness.js"></script>
+
+<script src="js/calendar.js"></script>
+
+<script src="js/app.js"></script>
+
 
 </body>
+
 </html>
