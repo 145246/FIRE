@@ -1,53 +1,40 @@
 // ==========================================
 // FIRE TABLET WEATHER CLOCK
-// 4 iCAL / ICS CALENDAR SYSTEM
-// ==========================================
-//
-// Features:
-//
-// • Up to 4 iCal / ICS calendar links
-// • Individual calendar names
-// • Individual priorities
-// • Events for the next 30 days
-// • Events sorted by date/time
-// • Duplicate events favor higher priority
-// • Calendar URLs saved on the tablet
-//
+// FOUR iCAL CALENDARS
 // ==========================================
 
 
 const CALENDAR_STORAGE_KEY =
-  "fireTabletCalendars";
+  "fireTabletCalendarURLs";
+
+
+const CALENDAR_COUNT = 4;
 
 
 // ==========================================
-// DEFAULT CALENDARS
+// CALENDAR INFORMATION
 // ==========================================
 
-const DEFAULT_CALENDARS = [
+const calendarInfo = [
 
   {
     name: "Calendar 1",
-    url: "",
-    priority: 1
+    color: "#2563eb"
   },
 
   {
     name: "Calendar 2",
-    url: "",
-    priority: 2
+    color: "#dc2626"
   },
 
   {
     name: "Calendar 3",
-    url: "",
-    priority: 3
+    color: "#16a34a"
   },
 
   {
     name: "Calendar 4",
-    url: "",
-    priority: 4
+    color: "#9333ea"
   }
 
 ];
@@ -59,228 +46,40 @@ const DEFAULT_CALENDARS = [
 
 function initializeCalendar() {
 
-  createCalendarSettings();
-
   loadSavedCalendars();
+
+  setupCalendarControls();
 
 }
 
 
 // ==========================================
-// CREATE SETTINGS
+// SET UP BUTTON
 // ==========================================
 
-function createCalendarSettings() {
+function setupCalendarControls() {
 
-  const settings =
-    document.getElementById(
-      "calendarSettings"
-    );
-
-
-  if (!settings) {
-    return;
-  }
-
-
-  settings.innerHTML = "";
-
-
-  for (
-    let i = 0;
-    i < 4;
-    i++
-  ) {
-
-    const calendar =
-      DEFAULT_CALENDARS[i];
-
-
-    const row =
-      document.createElement(
-        "div"
-      );
-
-
-    row.className =
-      "calendar-setting-row";
-
-
-    row.innerHTML = `
-
-      <div class="calendar-number">
-        ${i + 1}
-      </div>
-
-      <div class="calendar-inputs">
-
-        <input
-          type="text"
-          id="calendarName${i}"
-          placeholder="Calendar name"
-          value="${calendar.name}"
-        >
-
-        <input
-          type="url"
-          id="calendarURL${i}"
-          placeholder="Paste iCal / ICS link"
-          autocomplete="off"
-        >
-
-      </div>
-
-      <div class="calendar-priority">
-
-        <label>
-          Priority
-        </label>
-
-        <select
-          id="calendarPriority${i}">
-
-          <option value="1">
-            1 - Highest
-          </option>
-
-          <option value="2">
-            2
-          </option>
-
-          <option value="3">
-            3
-          </option>
-
-          <option value="4">
-            4 - Lowest
-          </option>
-
-        </select>
-
-      </div>
-
-    `;
-
-
-    settings.appendChild(
-      row
-    );
-
-  }
-
-
-  const saveButton =
+  const button =
     document.getElementById(
       "saveCalendars"
     );
 
 
-  if (saveButton) {
+  if (!button) {
 
-    saveButton.addEventListener(
-      "click",
-      saveCalendars
-    );
-
-  }
-
-}
-
-
-// ==========================================
-// LOAD SAVED CALENDARS
-// ==========================================
-
-function loadSavedCalendars() {
-
-  let calendars;
-
-
-  try {
-
-    calendars =
-      JSON.parse(
-        localStorage.getItem(
-          CALENDAR_STORAGE_KEY
-        )
-      );
-
-  } catch {
-
-    calendars = null;
+    return;
 
   }
 
 
-  if (
-    !Array.isArray(calendars) ||
-    calendars.length !== 4
-  ) {
+  button.addEventListener(
+    "click",
+    () => {
 
-    calendars =
-      DEFAULT_CALENDARS;
-
-  }
-
-
-  for (
-    let i = 0;
-    i < 4;
-    i++
-  ) {
-
-    const calendar =
-      calendars[i];
-
-
-    const name =
-      document.getElementById(
-        `calendarName${i}`
-      );
-
-
-    const url =
-      document.getElementById(
-        `calendarURL${i}`
-      );
-
-
-    const priority =
-      document.getElementById(
-        `calendarPriority${i}`
-      );
-
-
-    if (name) {
-
-      name.value =
-        calendar.name ||
-        `Calendar ${i + 1}`;
+      saveCalendars();
 
     }
-
-
-    if (url) {
-
-      url.value =
-        calendar.url ||
-        "";
-
-    }
-
-
-    if (priority) {
-
-      priority.value =
-        calendar.priority ||
-        i + 1;
-
-    }
-
-  }
-
-
-  loadAllCalendars();
+  );
 
 }
 
@@ -291,72 +90,100 @@ function loadSavedCalendars() {
 
 function saveCalendars() {
 
-  const calendars = [];
+  const urls = [];
 
 
   for (
-    let i = 0;
-    i < 4;
+    let i = 1;
+    i <= CALENDAR_COUNT;
     i++
   ) {
 
-    const name =
-      document.getElementById(
-        `calendarName${i}`
-      );
-
-
-    const url =
+    const input =
       document.getElementById(
         `calendarURL${i}`
       );
 
 
-    const priority =
-      document.getElementById(
-        `calendarPriority${i}`
-      );
+    const url =
+      input
+        ? input.value.trim()
+        : "";
 
 
-    calendars.push({
-
-      name:
-        name?.value.trim() ||
-        `Calendar ${i + 1}`,
-
-      url:
-        url?.value.trim() ||
-        "",
-
-      priority:
-        Number(
-          priority?.value ||
-          i + 1
-        )
-
-    });
+    urls.push(url);
 
   }
 
 
   localStorage.setItem(
     CALENDAR_STORAGE_KEY,
-    JSON.stringify(
-      calendars
-    )
+    JSON.stringify(urls)
   );
 
 
-  const status =
-    document.getElementById(
-      "calendarStatus"
+  loadAllCalendars();
+
+}
+
+
+// ==========================================
+// LOAD SAVED CALENDARS
+// ==========================================
+
+function loadSavedCalendars() {
+
+  let urls = [];
+
+
+  try {
+
+    const saved =
+      localStorage.getItem(
+        CALENDAR_STORAGE_KEY
+      );
+
+
+    if (saved) {
+
+      urls =
+        JSON.parse(
+          saved
+        );
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Calendar storage error:",
+      error
     );
 
+  }
 
-  if (status) {
 
-    status.textContent =
-      "Calendars saved. Updating...";
+  for (
+    let i = 1;
+    i <= CALENDAR_COUNT;
+    i++
+  ) {
+
+    const input =
+      document.getElementById(
+        `calendarURL${i}`
+      );
+
+
+    if (
+      input &&
+      urls[i - 1]
+    ) {
+
+      input.value =
+        urls[i - 1];
+
+    }
 
   }
 
@@ -372,48 +199,83 @@ function saveCalendars() {
 
 async function loadAllCalendars() {
 
-  const calendars =
-    getSavedCalendars();
-
-
-  const validCalendars =
-    calendars.filter(
-      calendar =>
-        calendar.url
+  const saved =
+    localStorage.getItem(
+      CALENDAR_STORAGE_KEY
     );
+
+
+  let urls = [];
+
+
+  if (saved) {
+
+    try {
+
+      urls =
+        JSON.parse(
+          saved
+        );
+
+    } catch {
+
+      urls = [];
+
+    }
+
+  }
+
+
+  const activeCalendars =
+    urls
+      .map(
+        (url, index) => ({
+
+          url:
+            url,
+
+          priority:
+            index + 1,
+
+          name:
+            calendarInfo[index].name,
+
+          color:
+            calendarInfo[index].color
+
+        })
+      )
+      .filter(
+        calendar =>
+          calendar.url
+      );
 
 
   if (
-    validCalendars.length === 0
+    activeCalendars.length === 0
   ) {
 
     showCalendarMessage(
-      "Add one or more iCal calendar links above."
+      "Add one or more iCal calendar links."
     );
-
-
-    updateCalendarStatus(
-      "No calendars configured"
-    );
-
 
     return;
 
   }
 
 
-  updateCalendarStatus(
-    `Loading ${validCalendars.length} calendar${
-      validCalendars.length === 1
-        ? ""
-        : "s"
-    }...`
+  showCalendarMessage(
+    "Loading calendars..."
   );
 
 
+  /*
+    Load all calendars at the same time.
+  */
+
   const results =
     await Promise.all(
-      validCalendars.map(
+      activeCalendars.map(
         calendar =>
           loadSingleCalendar(
             calendar
@@ -422,104 +284,64 @@ async function loadAllCalendars() {
     );
 
 
-  let allEvents = [];
-
-
-  results.forEach(
-    result => {
-
-      if (
-        result &&
-        result.events
-      ) {
-
-        allEvents =
-          allEvents.concat(
-            result.events
-          );
-
-      }
-
-    }
-  );
-
-
   /*
-    Remove duplicate events.
-
-    Higher-priority calendars are processed
-    first, so the highest-priority version
-    is retained.
+    Combine all successful results.
   */
 
-  allEvents =
-    removeDuplicateEvents(
-      allEvents
-    );
+  const allEvents =
+    results.flat();
 
 
   /*
-    Sort chronologically.
+    Sort:
+
+    1. Earliest event first
+    2. Calendar priority second
+    3. Event title third
   */
 
   allEvents.sort(
-    (a, b) =>
-      a.start - b.start
+    (a, b) => {
+
+      const timeDifference =
+        a.start - b.start;
+
+
+      if (
+        timeDifference !== 0
+      ) {
+
+        return timeDifference;
+
+      }
+
+
+      if (
+        a.priority !==
+        b.priority
+      ) {
+
+        return (
+          a.priority -
+          b.priority
+        );
+
+      }
+
+
+      return (
+        a.title || ""
+      ).localeCompare(
+        b.title || ""
+      );
+
+    }
   );
 
 
   displayEvents(
     allEvents
   );
-
-
-  updateCalendarStatus(
-    `${allEvents.length} upcoming event${
-      allEvents.length === 1
-        ? ""
-        : "s"
-    }`
-  );
-
-}
-
-
-// ==========================================
-// GET SAVED CALENDARS
-// ==========================================
-
-function getSavedCalendars() {
-
-  try {
-
-    const saved =
-      JSON.parse(
-        localStorage.getItem(
-          CALENDAR_STORAGE_KEY
-        )
-      );
-
-
-    if (
-      Array.isArray(saved) &&
-      saved.length === 4
-    ) {
-
-      return saved;
-
-    }
-
-  } catch (error) {
-
-    console.error(
-      "Could not read calendar settings:",
-      error
-    );
-
-  }
-
-
-  return DEFAULT_CALENDARS;
 
 }
 
@@ -534,16 +356,25 @@ async function loadSingleCalendar(
 
   try {
 
-    const response =
-      await fetch(
+    const proxyURL =
+      "/api/calendar?url=" +
+      encodeURIComponent(
         calendar.url
       );
 
 
-    if (!response.ok) {
+    const response =
+      await fetch(
+        proxyURL
+      );
+
+
+    if (
+      !response.ok
+    ) {
 
       throw new Error(
-        `HTTP ${response.status}`
+        `Calendar ${calendar.priority} returned ${response.status}`
       );
 
     }
@@ -553,41 +384,52 @@ async function loadSingleCalendar(
       await response.text();
 
 
+    if (
+      !icsText.includes(
+        "BEGIN:VCALENDAR"
+      )
+    ) {
+
+      throw new Error(
+        "Invalid iCalendar feed"
+      );
+
+    }
+
+
     const events =
       parseICS(
-        icsText,
-        calendar
+        icsText
       );
 
 
-    return {
+    return events.map(
+      event => ({
 
-      calendar:
-        calendar,
+        ...event,
 
-      events:
-        events
+        calendarName:
+          calendar.name,
 
-    };
+        calendarColor:
+          calendar.color,
+
+        priority:
+          calendar.priority
+
+      })
+    );
 
 
   } catch (error) {
 
     console.error(
-      `Calendar "${calendar.name}" failed:`,
+      `Calendar ${calendar.priority} error:`,
       error
     );
 
 
-    return {
-
-      calendar:
-        calendar,
-
-      events:
-        []
-
-    };
+    return [];
 
   }
 
@@ -599,15 +441,11 @@ async function loadSingleCalendar(
 // ==========================================
 
 function parseICS(
-  text,
-  calendar
+  text
 ) {
 
   /*
-    ICS files can split long lines across
-    multiple lines.
-
-    This joins those folded lines.
+    Unfold continuation lines.
   */
 
   const unfolded =
@@ -634,22 +472,10 @@ function parseICS(
   ) {
 
     if (
-      line ===
-      "BEGIN:VEVENT"
+      line === "BEGIN:VEVENT"
     ) {
 
-      currentEvent = {
-
-        calendarName:
-          calendar.name,
-
-        priority:
-          Number(
-            calendar.priority
-          ) || 4
-
-      };
-
+      currentEvent = {};
 
       continue;
 
@@ -657,8 +483,7 @@ function parseICS(
 
 
     if (
-      line ===
-      "END:VEVENT"
+      line === "END:VEVENT"
     ) {
 
       if (
@@ -666,37 +491,9 @@ function parseICS(
         currentEvent.start
       ) {
 
-        /*
-          Only keep events occurring
-          within the next 30 days.
-        */
-
-        const now =
-          new Date();
-
-
-        const monthFromNow =
-          new Date(
-            now.getTime() +
-            30 *
-            24 *
-            60 *
-            60 *
-            1000
-          );
-
-
-        if (
-          currentEvent.start >= now &&
-          currentEvent.start <=
-            monthFromNow
-        ) {
-
-          events.push(
-            currentEvent
-          );
-
-        }
+        events.push(
+          currentEvent
+        );
 
       }
 
@@ -704,14 +501,17 @@ function parseICS(
       currentEvent =
         null;
 
-
       continue;
 
     }
 
 
-    if (!currentEvent) {
+    if (
+      !currentEvent
+    ) {
+
       continue;
+
     }
 
 
@@ -728,23 +528,20 @@ function parseICS(
     }
 
 
-    const propertyPart =
-      line.substring(
-        0,
-        separator
-      );
+    const property =
+      line
+        .substring(
+          0,
+          separator
+        )
+        .split(";")[0]
+        .toUpperCase();
 
 
     const value =
       line.substring(
         separator + 1
       );
-
-
-    const property =
-      propertyPart
-        .split(";")[0]
-        .toUpperCase();
 
 
     switch (
@@ -786,21 +583,8 @@ function parseICS(
         currentEvent.start =
           parseICSDate(
             value,
-            propertyPart
+            line
           );
-
-
-        /*
-          VALUE=DATE means this is an
-          all-day event.
-        */
-
-        currentEvent.allDay =
-          propertyPart
-            .toUpperCase()
-            .includes(
-              "VALUE=DATE"
-            );
 
         break;
 
@@ -810,16 +594,8 @@ function parseICS(
         currentEvent.end =
           parseICSDate(
             value,
-            propertyPart
+            line
           );
-
-        break;
-
-
-      case "UID":
-
-        currentEvent.uid =
-          value;
 
         break;
 
@@ -828,92 +604,130 @@ function parseICS(
   }
 
 
-  return events;
+  const now =
+    new Date();
+
+
+  const thirtyDays =
+    new Date(
+      now.getTime() +
+      30 *
+      24 *
+      60 *
+      60 *
+      1000
+    );
+
+
+  return events.filter(
+    event => {
+
+      return (
+        event.start &&
+        !isNaN(
+          event.start.getTime()
+        ) &&
+        event.start >= now &&
+        event.start <= thirtyDays
+      );
+
+    }
+  );
 
 }
 
 
 // ==========================================
-// PARSE ICS DATE
+// PARSE DATE
 // ==========================================
 
 function parseICSDate(
   value,
-  propertyPart
+  line
 ) {
 
   /*
-    All-day:
-
-    20260906
+    All-day event.
   */
 
   if (
     value.length === 8
   ) {
 
-    const year =
+    return new Date(
+
       Number(
         value.substring(
           0,
           4
         )
-      );
+      ),
 
-
-    const month =
       Number(
         value.substring(
           4,
           6
         )
-      ) - 1;
+      ) - 1,
 
-
-    const day =
       Number(
         value.substring(
           6,
           8
         )
-      );
+      )
 
-
-    return new Date(
-      year,
-      month,
-      day
     );
 
   }
 
 
   /*
-    UTC:
-
-    20260906T190000Z
+    UTC date/time.
   */
 
   if (
     value.endsWith("Z")
   ) {
 
-    const formatted =
-      value.replace(
-        /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/,
-        "$1-$2-$3T$4:$5:$6Z"
+    const match =
+      value.match(
+        /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/
       );
 
 
+    if (!match) {
+
+      return new Date(
+        NaN
+      );
+
+    }
+
+
     return new Date(
-      formatted
+      Date.UTC(
+
+        Number(match[1]),
+
+        Number(match[2]) - 1,
+
+        Number(match[3]),
+
+        Number(match[4]),
+
+        Number(match[5]),
+
+        Number(match[6])
+
+      )
     );
 
   }
 
 
   /*
-    Local/floating time.
+    Local/floating date/time.
   */
 
   const match =
@@ -933,28 +747,230 @@ function parseICSDate(
 
   return new Date(
 
-    Number(
-      match[1]
-    ),
+    Number(match[1]),
 
-    Number(
-      match[2]
-    ) - 1,
+    Number(match[2]) - 1,
 
-    Number(
-      match[3]
-    ),
+    Number(match[3]),
 
-    Number(
-      match[4]
-    ),
+    Number(match[4]),
 
-    Number(
-      match[5]
-    ),
+    Number(match[5]),
 
-    Number(
-      match[6]
+    Number(match[6])
+
+  );
+
+}
+
+
+// ==========================================
+// DECODE ICS
+// ==========================================
+
+function decodeICS(
+  value
+) {
+
+  return value
+
+    .replace(
+      /\\n/gi,
+      "\n"
+    )
+
+    .replace(
+      /\\,/g,
+      ","
+    )
+
+    .replace(
+      /\\;/g,
+      ";"
+    )
+
+    .replace(
+      /\\\\/g,
+      "\\"
+    );
+
+}
+
+
+// ==========================================
+// DISPLAY EVENTS
+// ==========================================
+
+function displayEvents(
+  events
+) {
+
+  const container =
+    document.getElementById(
+      "calendarEvents"
+    );
+
+
+  if (!container) {
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    "";
+
+
+  if (
+    events.length === 0
+  ) {
+
+    showCalendarMessage(
+      "No upcoming events."
+    );
+
+    return;
+
+  }
+
+
+  events
+    .slice(
+      0,
+      20
+    )
+    .forEach(
+      event => {
+
+        const element =
+          document.createElement(
+            "div"
+          );
+
+
+        element.className =
+          "calendar-event";
+
+
+        element.style.borderLeft =
+          `4px solid ${event.calendarColor}`;
+
+
+        const date =
+          formatEventDate(
+            event.start
+          );
+
+
+        element.innerHTML = `
+
+          <div
+            class="calendar-event-calendar"
+            style="
+              color:
+                ${event.calendarColor};
+            "
+          >
+            ${escapeCalendarHTML(
+              event.calendarName
+            )}
+          </div>
+
+          <div class="calendar-event-date">
+            ${date}
+          </div>
+
+          <div class="calendar-event-title">
+            ${escapeCalendarHTML(
+              event.title ||
+              "Untitled event"
+            )}
+          </div>
+
+          <div class="calendar-priority">
+            Priority ${event.priority}
+          </div>
+
+          ${
+            event.location
+              ? `
+                <div class="calendar-location">
+                  📍 ${escapeCalendarHTML(
+                    event.location
+                  )}
+                </div>
+              `
+              : ""
+          }
+
+        `;
+
+
+        container.appendChild(
+          element
+        );
+
+      }
+    );
+
+}
+
+
+// ==========================================
+// FORMAT EVENT DATE
+// ==========================================
+
+function formatEventDate(
+  date
+) {
+
+  const today =
+    new Date();
+
+
+  if (
+    date.toDateString() ===
+    today.toDateString()
+  ) {
+
+    return (
+      "Today · " +
+      date.toLocaleTimeString(
+        undefined,
+        {
+          hour: "numeric",
+          minute: "2-digit"
+        }
+      )
+    );
+
+  }
+
+
+  return (
+
+    date.toLocaleDateString(
+      undefined,
+      {
+        weekday: "short",
+        month: "short",
+        day: "numeric"
+      }
+    )
+
+    +
+
+    " · "
+
+    +
+
+    date.toLocaleTimeString(
+      undefined,
+      {
+        hour: "numeric",
+        minute: "2-digit"
+      }
     )
 
   );
@@ -963,99 +979,71 @@ function parseICSDate(
 
 
 // ==========================================
-// REMOVE DUPLICATES
+// MESSAGE
 // ==========================================
 
-function removeDuplicateEvents(
-  events
+function showCalendarMessage(
+  message
 ) {
 
-  /*
-    Sort by priority first.
-
-    Priority 1 = highest.
-  */
-
-  events.sort(
-    (a, b) => {
-
-      if (
-        a.priority !==
-        b.priority
-      ) {
-
-        return (
-          a.priority -
-          b.priority
-        );
-
-      }
+  const container =
+    document.getElementById(
+      "calendarEvents"
+    );
 
 
-      return (
-        a.start -
-        b.start
-      );
+  if (!container) {
 
-    }
-  );
+    return;
+
+  }
 
 
-  const unique =
-    new Map();
+  container.innerHTML = `
 
+    <div class="calendar-message">
+      ${escapeCalendarHTML(
+        message
+      )}
+    </div>
 
-  events.forEach(
-    event => {
-
-      /*
-        UID is the best way to identify
-        the same event across calendars.
-
-        If UID isn't available, create
-        a signature using title/time.
-      */
-
-      const key =
-        event.uid
-          ? event.uid
-          : [
-              event.title,
-              event.start.getTime(),
-              event.end
-                ? event.end.getTime()
-                : "",
-              event.location || ""
-            ].join("|");
-
-
-      /*
-        Because events are processed from
-        highest priority to lowest priority,
-        the first version wins.
-      */
-
-      if (
-        !unique.has(key)
-      ) {
-
-        unique.set(
-          key,
-          event
-        );
-
-      }
-
-    }
-  );
-
-
-  return Array.from(
-    unique.values()
-  );
+  `;
 
 }
 
 
 // ==========================================
-// DISPLAY
+// ESCAPE HTML
+// ==========================================
+
+function escapeCalendarHTML(
+  value
+) {
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+
+  div.textContent =
+    value;
+
+
+  return div.innerHTML;
+
+}
+
+
+// ==========================================
+// AUTOMATIC REFRESH
+// ==========================================
+
+setInterval(
+  () => {
+
+    loadAllCalendars();
+
+  },
+  15 * 60 * 1000
+);
