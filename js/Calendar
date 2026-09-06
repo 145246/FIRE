@@ -1,8 +1,56 @@
 // ==========================================
-// GOOGLE CALENDAR
+// FIRE TABLET WEATHER CLOCK
+// 4 iCAL / ICS CALENDAR SYSTEM
+// ==========================================
+//
+// Features:
+//
+// • Up to 4 iCal / ICS calendar links
+// • Individual calendar names
+// • Individual priorities
+// • Events for the next 30 days
+// • Events sorted by date/time
+// • Duplicate events favor higher priority
+// • Calendar URLs saved on the tablet
+//
 // ==========================================
 
-let calendarConnected = false;
+
+const CALENDAR_STORAGE_KEY =
+  "fireTabletCalendars";
+
+
+// ==========================================
+// DEFAULT CALENDARS
+// ==========================================
+
+const DEFAULT_CALENDARS = [
+
+  {
+    name: "Calendar 1",
+    url: "",
+    priority: 1
+  },
+
+  {
+    name: "Calendar 2",
+    url: "",
+    priority: 2
+  },
+
+  {
+    name: "Calendar 3",
+    url: "",
+    priority: 3
+  },
+
+  {
+    name: "Calendar 4",
+    url: "",
+    priority: 4
+  }
+
+];
 
 
 // ==========================================
@@ -11,74 +59,535 @@ let calendarConnected = false;
 
 function initializeCalendar() {
 
-  const connectButton =
-    document.getElementById(
-      "calendarConnect"
-    );
+  createCalendarSettings();
 
-
-  if (connectButton) {
-
-    connectButton.addEventListener(
-      "click",
-      connectGoogleCalendar
-    );
-
-  }
-
-
-  /*
-    Check whether the server already
-    has a Google Calendar connection.
-  */
-
-  checkCalendarConnection();
+  loadSavedCalendars();
 
 }
 
 
 // ==========================================
-// CHECK CONNECTION
+// CREATE SETTINGS
 // ==========================================
 
-async function checkCalendarConnection() {
+function createCalendarSettings() {
 
-  try {
+  const settings =
+    document.getElementById(
+      "calendarSettings"
+    );
 
-    const response =
-      await fetch(
-        "/api/calendar/status"
+
+  if (!settings) {
+    return;
+  }
+
+
+  settings.innerHTML = "";
+
+
+  for (
+    let i = 0;
+    i < 4;
+    i++
+  ) {
+
+    const calendar =
+      DEFAULT_CALENDARS[i];
+
+
+    const row =
+      document.createElement(
+        "div"
       );
 
 
-    if (!response.ok) {
-      return;
+    row.className =
+      "calendar-setting-row";
+
+
+    row.innerHTML = `
+
+      <div class="calendar-number">
+        ${i + 1}
+      </div>
+
+      <div class="calendar-inputs">
+
+        <input
+          type="text"
+          id="calendarName${i}"
+          placeholder="Calendar name"
+          value="${calendar.name}"
+        >
+
+        <input
+          type="url"
+          id="calendarURL${i}"
+          placeholder="Paste iCal / ICS link"
+          autocomplete="off"
+        >
+
+      </div>
+
+      <div class="calendar-priority">
+
+        <label>
+          Priority
+        </label>
+
+        <select
+          id="calendarPriority${i}">
+
+          <option value="1">
+            1 - Highest
+          </option>
+
+          <option value="2">
+            2
+          </option>
+
+          <option value="3">
+            3
+          </option>
+
+          <option value="4">
+            4 - Lowest
+          </option>
+
+        </select>
+
+      </div>
+
+    `;
+
+
+    settings.appendChild(
+      row
+    );
+
+  }
+
+
+  const saveButton =
+    document.getElementById(
+      "saveCalendars"
+    );
+
+
+  if (saveButton) {
+
+    saveButton.addEventListener(
+      "click",
+      saveCalendars
+    );
+
+  }
+
+}
+
+
+// ==========================================
+// LOAD SAVED CALENDARS
+// ==========================================
+
+function loadSavedCalendars() {
+
+  let calendars;
+
+
+  try {
+
+    calendars =
+      JSON.parse(
+        localStorage.getItem(
+          CALENDAR_STORAGE_KEY
+        )
+      );
+
+  } catch {
+
+    calendars = null;
+
+  }
+
+
+  if (
+    !Array.isArray(calendars) ||
+    calendars.length !== 4
+  ) {
+
+    calendars =
+      DEFAULT_CALENDARS;
+
+  }
+
+
+  for (
+    let i = 0;
+    i < 4;
+    i++
+  ) {
+
+    const calendar =
+      calendars[i];
+
+
+    const name =
+      document.getElementById(
+        `calendarName${i}`
+      );
+
+
+    const url =
+      document.getElementById(
+        `calendarURL${i}`
+      );
+
+
+    const priority =
+      document.getElementById(
+        `calendarPriority${i}`
+      );
+
+
+    if (name) {
+
+      name.value =
+        calendar.name ||
+        `Calendar ${i + 1}`;
+
     }
 
 
-    const data =
-      await response.json();
+    if (url) {
+
+      url.value =
+        calendar.url ||
+        "";
+
+    }
 
 
-    calendarConnected =
-      data.connected === true;
+    if (priority) {
+
+      priority.value =
+        calendar.priority ||
+        i + 1;
+
+    }
+
+  }
+
+
+  loadAllCalendars();
+
+}
+
+
+// ==========================================
+// SAVE CALENDARS
+// ==========================================
+
+function saveCalendars() {
+
+  const calendars = [];
+
+
+  for (
+    let i = 0;
+    i < 4;
+    i++
+  ) {
+
+    const name =
+      document.getElementById(
+        `calendarName${i}`
+      );
+
+
+    const url =
+      document.getElementById(
+        `calendarURL${i}`
+      );
+
+
+    const priority =
+      document.getElementById(
+        `calendarPriority${i}`
+      );
+
+
+    calendars.push({
+
+      name:
+        name?.value.trim() ||
+        `Calendar ${i + 1}`,
+
+      url:
+        url?.value.trim() ||
+        "",
+
+      priority:
+        Number(
+          priority?.value ||
+          i + 1
+        )
+
+    });
+
+  }
+
+
+  localStorage.setItem(
+    CALENDAR_STORAGE_KEY,
+    JSON.stringify(
+      calendars
+    )
+  );
+
+
+  const status =
+    document.getElementById(
+      "calendarStatus"
+    );
+
+
+  if (status) {
+
+    status.textContent =
+      "Calendars saved. Updating...";
+
+  }
+
+
+  loadAllCalendars();
+
+}
+
+
+// ==========================================
+// LOAD ALL FOUR CALENDARS
+// ==========================================
+
+async function loadAllCalendars() {
+
+  const calendars =
+    getSavedCalendars();
+
+
+  const validCalendars =
+    calendars.filter(
+      calendar =>
+        calendar.url
+    );
+
+
+  if (
+    validCalendars.length === 0
+  ) {
+
+    showCalendarMessage(
+      "Add one or more iCal calendar links above."
+    );
+
+
+    updateCalendarStatus(
+      "No calendars configured"
+    );
+
+
+    return;
+
+  }
+
+
+  updateCalendarStatus(
+    `Loading ${validCalendars.length} calendar${
+      validCalendars.length === 1
+        ? ""
+        : "s"
+    }...`
+  );
+
+
+  const results =
+    await Promise.all(
+      validCalendars.map(
+        calendar =>
+          loadSingleCalendar(
+            calendar
+          )
+      )
+    );
+
+
+  let allEvents = [];
+
+
+  results.forEach(
+    result => {
+
+      if (
+        result &&
+        result.events
+      ) {
+
+        allEvents =
+          allEvents.concat(
+            result.events
+          );
+
+      }
+
+    }
+  );
+
+
+  /*
+    Remove duplicate events.
+
+    Higher-priority calendars are processed
+    first, so the highest-priority version
+    is retained.
+  */
+
+  allEvents =
+    removeDuplicateEvents(
+      allEvents
+    );
+
+
+  /*
+    Sort chronologically.
+  */
+
+  allEvents.sort(
+    (a, b) =>
+      a.start - b.start
+  );
+
+
+  displayEvents(
+    allEvents
+  );
+
+
+  updateCalendarStatus(
+    `${allEvents.length} upcoming event${
+      allEvents.length === 1
+        ? ""
+        : "s"
+    }`
+  );
+
+}
+
+
+// ==========================================
+// GET SAVED CALENDARS
+// ==========================================
+
+function getSavedCalendars() {
+
+  try {
+
+    const saved =
+      JSON.parse(
+        localStorage.getItem(
+          CALENDAR_STORAGE_KEY
+        )
+      );
 
 
     if (
-      calendarConnected
+      Array.isArray(saved) &&
+      saved.length === 4
     ) {
 
-      showCalendar();
-
-      loadCalendarEvents();
+      return saved;
 
     }
 
   } catch (error) {
 
-    console.log(
-      "Calendar server not configured yet."
+    console.error(
+      "Could not read calendar settings:",
+      error
     );
+
+  }
+
+
+  return DEFAULT_CALENDARS;
+
+}
+
+
+// ==========================================
+// LOAD ONE CALENDAR
+// ==========================================
+
+async function loadSingleCalendar(
+  calendar
+) {
+
+  try {
+
+    const response =
+      await fetch(
+        calendar.url
+      );
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        `HTTP ${response.status}`
+      );
+
+    }
+
+
+    const icsText =
+      await response.text();
+
+
+    const events =
+      parseICS(
+        icsText,
+        calendar
+      );
+
+
+    return {
+
+      calendar:
+        calendar,
+
+      events:
+        events
+
+    };
+
+
+  } catch (error) {
+
+    console.error(
+      `Calendar "${calendar.name}" failed:`,
+      error
+    );
+
+
+    return {
+
+      calendar:
+        calendar,
+
+      events:
+        []
+
+    };
 
   }
 
@@ -86,71 +595,467 @@ async function checkCalendarConnection() {
 
 
 // ==========================================
-// CONNECT GOOGLE CALENDAR
+// PARSE ICS
 // ==========================================
 
-function connectGoogleCalendar() {
+function parseICS(
+  text,
+  calendar
+) {
 
   /*
-    The server will handle OAuth.
+    ICS files can split long lines across
+    multiple lines.
 
-    This prevents Google credentials
-    from being exposed in the frontend.
+    This joins those folded lines.
   */
 
-  window.location.href =
-    "/auth/google";
+  const unfolded =
+    text.replace(
+      /\r?\n[ \t]/g,
+      ""
+    );
+
+
+  const lines =
+    unfolded.split(
+      /\r?\n/
+    );
+
+
+  const events = [];
+
+  let currentEvent =
+    null;
+
+
+  for (
+    const line of lines
+  ) {
+
+    if (
+      line ===
+      "BEGIN:VEVENT"
+    ) {
+
+      currentEvent = {
+
+        calendarName:
+          calendar.name,
+
+        priority:
+          Number(
+            calendar.priority
+          ) || 4
+
+      };
+
+
+      continue;
+
+    }
+
+
+    if (
+      line ===
+      "END:VEVENT"
+    ) {
+
+      if (
+        currentEvent &&
+        currentEvent.start
+      ) {
+
+        /*
+          Only keep events occurring
+          within the next 30 days.
+        */
+
+        const now =
+          new Date();
+
+
+        const monthFromNow =
+          new Date(
+            now.getTime() +
+            30 *
+            24 *
+            60 *
+            60 *
+            1000
+          );
+
+
+        if (
+          currentEvent.start >= now &&
+          currentEvent.start <=
+            monthFromNow
+        ) {
+
+          events.push(
+            currentEvent
+          );
+
+        }
+
+      }
+
+
+      currentEvent =
+        null;
+
+
+      continue;
+
+    }
+
+
+    if (!currentEvent) {
+      continue;
+    }
+
+
+    const separator =
+      line.indexOf(":");
+
+
+    if (
+      separator === -1
+    ) {
+
+      continue;
+
+    }
+
+
+    const propertyPart =
+      line.substring(
+        0,
+        separator
+      );
+
+
+    const value =
+      line.substring(
+        separator + 1
+      );
+
+
+    const property =
+      propertyPart
+        .split(";")[0]
+        .toUpperCase();
+
+
+    switch (
+      property
+    ) {
+
+      case "SUMMARY":
+
+        currentEvent.title =
+          decodeICS(
+            value
+          );
+
+        break;
+
+
+      case "DESCRIPTION":
+
+        currentEvent.description =
+          decodeICS(
+            value
+          );
+
+        break;
+
+
+      case "LOCATION":
+
+        currentEvent.location =
+          decodeICS(
+            value
+          );
+
+        break;
+
+
+      case "DTSTART":
+
+        currentEvent.start =
+          parseICSDate(
+            value,
+            propertyPart
+          );
+
+
+        /*
+          VALUE=DATE means this is an
+          all-day event.
+        */
+
+        currentEvent.allDay =
+          propertyPart
+            .toUpperCase()
+            .includes(
+              "VALUE=DATE"
+            );
+
+        break;
+
+
+      case "DTEND":
+
+        currentEvent.end =
+          parseICSDate(
+            value,
+            propertyPart
+          );
+
+        break;
+
+
+      case "UID":
+
+        currentEvent.uid =
+          value;
+
+        break;
+
+    }
+
+  }
+
+
+  return events;
 
 }
 
 
 // ==========================================
-// SHOW CALENDAR
+// PARSE ICS DATE
 // ==========================================
 
-function showCalendar() {
+function parseICSDate(
+  value,
+  propertyPart
+) {
 
-  const login =
-    document.getElementById(
-      "calendarLogin"
+  /*
+    All-day:
+
+    20260906
+  */
+
+  if (
+    value.length === 8
+  ) {
+
+    const year =
+      Number(
+        value.substring(
+          0,
+          4
+        )
+      );
+
+
+    const month =
+      Number(
+        value.substring(
+          4,
+          6
+        )
+      ) - 1;
+
+
+    const day =
+      Number(
+        value.substring(
+          6,
+          8
+        )
+      );
+
+
+    return new Date(
+      year,
+      month,
+      day
     );
 
-
-  const events =
-    document.getElementById(
-      "calendarEvents"
-    );
-
-
-  if (login) {
-    login.style.display =
-      "none";
   }
 
 
-  if (events) {
-    events.style.display =
-      "block";
+  /*
+    UTC:
+
+    20260906T190000Z
+  */
+
+  if (
+    value.endsWith("Z")
+  ) {
+
+    const formatted =
+      value.replace(
+        /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/,
+        "$1-$2-$3T$4:$5:$6Z"
+      );
+
+
+    return new Date(
+      formatted
+    );
+
   }
+
+
+  /*
+    Local/floating time.
+  */
+
+  const match =
+    value.match(
+      /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/
+    );
+
+
+  if (!match) {
+
+    return new Date(
+      NaN
+    );
+
+  }
+
+
+  return new Date(
+
+    Number(
+      match[1]
+    ),
+
+    Number(
+      match[2]
+    ) - 1,
+
+    Number(
+      match[3]
+    ),
+
+    Number(
+      match[4]
+    ),
+
+    Number(
+      match[5]
+    ),
+
+    Number(
+      match[6]
+    )
+
+  );
 
 }
 
 
 // ==========================================
-// LOAD EVENTS
+// REMOVE DUPLICATES
 // ==========================================
 
-async function loadCalendarEvents() {
+function removeDuplicateEvents(
+  events
+) {
 
-  const container =
-    document.getElementById(
-      "calendarEvents"
-    );
+  /*
+    Sort by priority first.
+
+    Priority 1 = highest.
+  */
+
+  events.sort(
+    (a, b) => {
+
+      if (
+        a.priority !==
+        b.priority
+      ) {
+
+        return (
+          a.priority -
+          b.priority
+        );
+
+      }
 
 
-  if (!container) return;
+      return (
+        a.start -
+        b.start
+      );
+
+    }
+  );
 
 
-  container.innerHTML =
-    `<div class="loading">
-      Loading calendar
+  const unique =
+    new Map();
+
+
+  events.forEach(
+    event => {
+
+      /*
+        UID is the best way to identify
+        the same event across calendars.
+
+        If UID isn't available, create
+        a signature using title/time.
+      */
+
+      const key =
+        event.uid
+          ? event.uid
+          : [
+              event.title,
+              event.start.getTime(),
+              event.end
+                ? event.end.getTime()
+                : "",
+              event.location || ""
+            ].join("|");
+
+
+      /*
+        Because events are processed from
+        highest priority to lowest priority,
+        the first version wins.
+      */
+
+      if (
+        !unique.has(key)
+      ) {
+
+        unique.set(
+          key,
+          event
+        );
+
+      }
+
+    }
+  );
+
+
+  return Array.from(
+    unique.values()
+  );
+
+}
+
+
+// ==========================================
+// DISPLAY
