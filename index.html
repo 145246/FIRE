@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>Bedside Clock</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #05070a;
+      color: white;
+      font-family: Arial, Helvetica, sans-serif;
+      overflow-x: hidden;
+    }
+
+    .app {
+      min-height: 100vh;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* CLOCK */
+
+    .clock-card {
+      flex: 1;
+      min-height: 50vh;
+      border-radius: 30px;
+      background: linear-gradient(145deg, #10151d, #080b10);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 40px rgba(0,0,0,.45);
+      border: 1px solid #202833;
+    }
+
+    #time {
+      font-size: clamp(70px, 16vw, 190px);
+      font-weight: 200;
+      letter-spacing: -5px;
+      line-height: .95;
+      color: #ffffff;
+    }
+
+    #date {
+      margin-top: 20px;
+      font-size: clamp(18px, 3vw, 32px);
+      color: #9da8b5;
+    }
+
+    /* WEATHER */
+
+    .weather-card {
+      border-radius: 25px;
+      background: #10151d;
+      padding: 25px;
+      border: 1px solid #202833;
+    }
+
+    .weather-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .weather-location {
+      font-size: 24px;
+      color: #cbd5e1;
+    }
+
+    .weather-temp {
+      font-size: 60px;
+      font-weight: 300;
+    }
+
+    .weather-description {
+      color: #9da8b5;
+      font-size: 20px;
+      margin-top: 5px;
+    }
+
+    .weather-details {
+      display: flex;
+      gap: 30px;
+      margin-top: 20px;
+      color: #aeb8c4;
+      flex-wrap: wrap;
+    }
+
+    /* ALARM */
+
+    .alarm-card {
+      background: #10151d;
+      border-radius: 25px;
+      padding: 25px;
+      border: 1px solid #202833;
+    }
+
+    .section-title {
+      font-size: 25px;
+      margin
