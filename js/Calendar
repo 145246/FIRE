@@ -1,0 +1,156 @@
+// ==========================================
+// GOOGLE CALENDAR
+// ==========================================
+
+let calendarConnected = false;
+
+
+// ==========================================
+// INITIALIZE
+// ==========================================
+
+function initializeCalendar() {
+
+  const connectButton =
+    document.getElementById(
+      "calendarConnect"
+    );
+
+
+  if (connectButton) {
+
+    connectButton.addEventListener(
+      "click",
+      connectGoogleCalendar
+    );
+
+  }
+
+
+  /*
+    Check whether the server already
+    has a Google Calendar connection.
+  */
+
+  checkCalendarConnection();
+
+}
+
+
+// ==========================================
+// CHECK CONNECTION
+// ==========================================
+
+async function checkCalendarConnection() {
+
+  try {
+
+    const response =
+      await fetch(
+        "/api/calendar/status"
+      );
+
+
+    if (!response.ok) {
+      return;
+    }
+
+
+    const data =
+      await response.json();
+
+
+    calendarConnected =
+      data.connected === true;
+
+
+    if (
+      calendarConnected
+    ) {
+
+      showCalendar();
+
+      loadCalendarEvents();
+
+    }
+
+  } catch (error) {
+
+    console.log(
+      "Calendar server not configured yet."
+    );
+
+  }
+
+}
+
+
+// ==========================================
+// CONNECT GOOGLE CALENDAR
+// ==========================================
+
+function connectGoogleCalendar() {
+
+  /*
+    The server will handle OAuth.
+
+    This prevents Google credentials
+    from being exposed in the frontend.
+  */
+
+  window.location.href =
+    "/auth/google";
+
+}
+
+
+// ==========================================
+// SHOW CALENDAR
+// ==========================================
+
+function showCalendar() {
+
+  const login =
+    document.getElementById(
+      "calendarLogin"
+    );
+
+
+  const events =
+    document.getElementById(
+      "calendarEvents"
+    );
+
+
+  if (login) {
+    login.style.display =
+      "none";
+  }
+
+
+  if (events) {
+    events.style.display =
+      "block";
+  }
+
+}
+
+
+// ==========================================
+// LOAD EVENTS
+// ==========================================
+
+async function loadCalendarEvents() {
+
+  const container =
+    document.getElementById(
+      "calendarEvents"
+    );
+
+
+  if (!container) return;
+
+
+  container.innerHTML =
+    `<div class="loading">
+      Loading calendar
